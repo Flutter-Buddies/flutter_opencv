@@ -24,4 +24,23 @@ class Point {
     this.x = x;
     this.y = y;
   }
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "{x: $x, y: $y}";
+  }
+}
+
+class Line {
+  Point start;
+  Point end;
+  Line(Point start, Point end) {
+    this.start = start;
+    this.end = end;
+  }
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "{start: $start,end: $end}";
+  }
 }

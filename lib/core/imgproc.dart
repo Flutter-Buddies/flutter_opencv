@@ -12,6 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
+import 'helpers.dart';
+
 class ImgProc {
   /// Define method channel
   static const MethodChannel _channel = const MethodChannel('opencv');
@@ -864,6 +866,37 @@ class ImgProc {
   }
 
   /// Function takes input file's byte array data, values of rho & theta, threshold value, srn & stn values & min & max theta values.
+  static Future<List<Line>> houghLinesPoints(
+    Uint8List byteData, {
+    double rho = 1,
+    double theta = math.pi / 180,
+    int threshold = 1,
+    double minLineLength = 0,
+    double maxLineGap = 0,
+  }) async {
+    /// Variable to store operation result
+    print("calling houghlines: " + math.pi.toString());
+    final List<dynamic> result =
+        await _channel.invokeMethod('houghLinesPoints', {
+      'byteData': byteData,
+      'rho': rho,
+      'theta': theta,
+      'threshold': threshold,
+      'minLineLength': minLineLength,
+      'maxLineGap': maxLineGap,
+    });
+    List<Line> lines = [];
+    for (var points in result) {
+      lines.add(Line(
+          Point(points['startPoint']['x'], points['startPoint']['y']),
+          Point(points['endPoint']['x'], points['startPoint']['y'])));
+    }
+
+    /// Function returns the response from method channel
+    return lines;
+  }
+
+  /// Function takes input file's byte array data, values of rho & theta, threshold value, srn & stn values & min & max theta values.
   static Future<dynamic> houghLinesProbabilistic(Uint8List byteData,
       {double rho = 1,
       double theta = math.pi / 180,
@@ -954,10 +987,23 @@ class ImgProc {
     return result;
   }
 
-  static Future<dynamic> grabCut(Uint8List byteData, {int px = 0, int py = 0, int qx = 0, int qy = 0, int itercount = 1, int mode = 0}) async {
+  static Future<dynamic> grabCut(Uint8List byteData,
+      {int px = 0,
+      int py = 0,
+      int qx = 0,
+      int qy = 0,
+      int itercount = 1,
+      int mode = 0}) async {
     /// Variable to store operation result
-    final dynamic result = await _channel.invokeMethod(
-        'grabCut', {'byteData': byteData, 'px': px, 'py': py, 'qx': qx, 'qy': qy, 'itercount': itercount, 'mode': mode});
+    final dynamic result = await _channel.invokeMethod('grabCut', {
+      'byteData': byteData,
+      'px': px,
+      'py': py,
+      'qx': qx,
+      'qy': qy,
+      'itercount': itercount,
+      'mode': mode
+    });
 
     /// Function returns the set String as result, use for debugging
     return result;

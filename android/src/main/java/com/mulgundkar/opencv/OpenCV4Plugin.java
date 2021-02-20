@@ -170,6 +170,12 @@ public class OpenCV4Plugin implements FlutterPlugin, MethodCallHandler {
                         (String) call.argument("lineColor"), (int) call.argument("lineThickness"),
                         (int) call.argument("lineType"), (int) call.argument("shift")));
                 break;
+            case "houghLinesPoints":
+                result.success(
+                        core.houghLinesPoints((byte[]) call.argument("byteData"), (double) call.argument("rho"),
+                                (double) call.argument("theta"), (int) call.argument("threshold"),
+                                (double) call.argument("minLineLength"), (double) call.argument("maxLineGap")));
+                break;
             case "houghLinesProbabilistic":
                 result.success(
                         core.houghLinesProbabilistic((byte[]) call.argument("byteData"), (double) call.argument("rho"),

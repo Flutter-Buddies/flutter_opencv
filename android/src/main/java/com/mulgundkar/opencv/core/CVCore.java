@@ -17,6 +17,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -648,6 +649,38 @@ public class CVCore {
             System.out.println("OpenCV Error: " + e.toString());
         }
         return byteArray;
+    }
+
+    @SuppressLint("MissingPermission")
+    public ArrayList houghLinesPoints(byte[] byteData, double rho, double theta, int threshold,
+                                      double minLineLength, double maxLineGap) {
+            ArrayList<HashMap<String,HashMap<String,Double>>> pointsList = new ArrayList<>();
+                try {
+                    Mat src = Imgcodecs.imdecode(new MatOfByte(byteData), Imgcodecs.IMREAD_UNCHANGED);
+
+                    // Probabilistic Line Transform
+                    Mat linesP = new Mat(); // will hold the results of the detection
+                    Imgproc.HoughLinesP(src, linesP, rho, theta, threshold, minLineLength, maxLineGap); // runs the actual
+                                                                                                           // detection
+                    // the lines points
+                    for (int x = 0; x < linesP.rows(); x++) {
+                        double[] l = linesP.get(x, 0);
+                        HashMap<String,Double> startPoint= new HashMap<>();
+                        startPoint.put("x",l[0]);
+                        startPoint.put("y", l[1]);
+                        HashMap<String,Double> endPoint= new HashMap<>();
+                        endPoint.put("x",l[2]);
+                        endPoint.put("y", l[3]);
+                        HashMap<String,HashMap<String,Double>> point= new HashMap<>();
+                        point.put("startPoint",startPoint);
+                        point.put("endPoint",endPoint);
+                        pointsList.add(point);
+                    }
+        
+                } catch (Exception e) {
+                    System.out.println("OpenCV Error: " + e.toString());
+                }
+                return pointsList;
     }
 
     @SuppressLint("MissingPermission")

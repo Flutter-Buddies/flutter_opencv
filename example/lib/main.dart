@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:opencv/opencv.dart';
 import 'package:opencv/core/core.dart';
+import 'package:opencv/core/helpers.dart';
 
 void main() => runApp(MyApp());
 
@@ -88,6 +89,7 @@ class _MyAppState extends State<MyApp> {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
+      List<Line> lines;
       switch (functionName) {
         case 'blur':
           res = await ImgProc.blur(
@@ -185,6 +187,15 @@ class _MyAppState extends State<MyApp> {
               maxLineGap: 10,
               lineColor: "#ff0000");
           break;
+        case 'houghLinesPoints':
+          res = await ImgProc.canny(await file.readAsBytes(), 50, 200);
+          lines = await ImgProc.houghLinesPoints(
+            await res,
+            threshold: 50,
+            minLineLength: 50,
+            maxLineGap: 10,
+          );
+          break;
         case 'houghCircles':
           res = await ImgProc.cvtColor(await file.readAsBytes(), 6);
           res = await ImgProc.houghCircles(await res,
@@ -217,7 +228,9 @@ class _MyAppState extends State<MyApp> {
           print("No function selected");
           break;
       }
-
+      if (lines != null) {
+        print("lines : $lines");
+      }
       setState(() {
         imageNew = Image.memory(res);
         loaded = true;
@@ -296,7 +309,8 @@ class _MyAppState extends State<MyApp> {
                       'houghLinesProbabilistic',
                       'houghCircles',
                       'warpPerspectiveTransform',
-                      'grabCut'
+                      'grabCut',
+                      'houghLinesPoints'
                     ].map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
